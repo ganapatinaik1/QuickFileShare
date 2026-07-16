@@ -1,0 +1,25 @@
+{
+  "name": "quickfileshare",
+  "version": "1.0.0",
+  "description": "Temporary file sharing application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ganapatinaik1/QuickFileShare.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ganapatinaik1/QuickFileShare/issues"
+  },
+  "homepage": "https://github.com/ganapatinaik1/QuickFileShare#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "multer": "^2.2.0"
+  }
+}

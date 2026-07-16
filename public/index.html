@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QuickFileShare</title>
+</head>
+<body>
+
+    <h1>QuickFileShare</h1>
+
+    <input type="file" id="fileInput">
+    <button id="uploadBtn">Upload</button>
+
+    <script>
+
+        const fileInput = document.getElementById("fileInput");
+        const uploadBtn = document.getElementById("uploadBtn");
+
+        uploadBtn.addEventListener("click", async () => {
+
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select a file first!");
+                return;
+            }
+
+            console.log("Selected File:", file);
+
+            const formData = new FormData();
+
+            formData.append("file", file);
+
+            try {
+
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                   
+                });
+
+                // Read the response sent by Express
+                const message = await response.text();
+
+                console.log("Server:", message);
+
+            } catch (error) {
+
+                console.error("Upload Failed:", error);
+
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>
