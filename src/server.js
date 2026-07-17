@@ -2,6 +2,12 @@ const multer = require("multer");
 
 const express = require('express');
 
+const { PrismaClient } = require("@prisma/client");
+
+const path = require("path");
+
+const prisma = new PrismaClient();
+
 const app = express()
 
 app.use(express.static("public"));
@@ -34,9 +40,17 @@ function generateCode() {
     return code;
 }
 
-app.post("/upload", upload.single("file"), (req, res) => {
+app.post("/upload", upload.single("file"), async (req, res) => {
 
  const code = generateCode();
+
+ await prisma.file.create({
+    data: {
+        code: code,
+        originalName: req.file.originalname,
+        storedName: req.file.filename,
+    }
+    });
 
     console.log(req.file);
 
@@ -48,3 +62,32 @@ app.post("/upload", upload.single("file"), (req, res) => {
 
 
 });
+
+
+//download
+
+app.get("/download/:code", async (req, res) => {
+
+    const file = await prisma.file.findUnique({
+        where: {
+            code: req.params.code
+        }
+    });
+
+    if (!file) {
+    return res.status(404).send("File not found");
+}
+
+    console.log(file);
+
+const filePath = path.join(__dirname, "..", "uploads", file.storedName);
+
+console.log(filePath);
+
+res.download(filePath, file.originalName);
+
+
+});
+
+
+

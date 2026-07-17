@@ -1,19 +1,44 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>QuickFileShare</title>
 </head>
+
 <body>
 
     <h1>QuickFileShare</h1>
 
+    <!-- Upload Section -->
     <input type="file" id="fileInput">
     <button id="uploadBtn">Upload</button>
 
+    <p id="codeText"></p>
+
+    <hr>
+
+    <!-- Download Section -->
+    <h2>Download File</h2>
+
+    <input
+        type="text"
+        id="downloadCode"
+        placeholder="Enter Code"
+    >
+
+    <button id="downloadBtn">
+        Download
+    </button>
+
     <script>
+
+        // =========================
+        // Upload
+        // =========================
 
         const fileInput = document.getElementById("fileInput");
         const uploadBtn = document.getElementById("uploadBtn");
+        const codeText = document.getElementById("codeText");
 
         uploadBtn.addEventListener("click", async () => {
 
@@ -24,10 +49,7 @@
                 return;
             }
 
-            console.log("Selected File:", file);
-
             const formData = new FormData();
-
             formData.append("file", file);
 
             try {
@@ -35,23 +57,43 @@
                 const response = await fetch("/upload", {
                     method: "POST",
                     body: formData
-                   
                 });
 
-                // Read the response sent by Express
-                const message = await response.text();
+                const data = await response.json();
 
-                console.log("Server:", message);
+                codeText.textContent = `Your Code: ${data.code}`;
 
             } catch (error) {
 
-                console.error("Upload Failed:", error);
+                console.error(error);
+                alert("Upload failed!");
 
             }
+
+        });
+
+        // =========================
+        // Download
+        // =========================
+
+        const downloadBtn = document.getElementById("downloadBtn");
+        const downloadCode = document.getElementById("downloadCode");
+
+        downloadBtn.addEventListener("click", () => {
+
+            const code = downloadCode.value.trim();
+
+            if (!code) {
+                alert("Please enter a code!");
+                return;
+            }
+
+            window.location.href = `/download/${code}`;
 
         });
 
     </script>
 
 </body>
+
 </html>

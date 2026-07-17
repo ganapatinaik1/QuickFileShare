@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/ganapatinaik1/QuickFileShare#readme",
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "express": "^5.2.1",
-    "multer": "^2.2.0"
+    "multer": "^2.2.0",
+    "prisma": "^6.19.3"
   }
 }
