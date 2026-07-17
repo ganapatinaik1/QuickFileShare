@@ -1,98 +1,657 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>QuickFileShare</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickFileShare — terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+
+    /* =========================
+       ANSI-inspired palette
+    ========================= */
+    :root {
+        --term-bg: #0a0e12;
+        --term-bg-raised: #0d1218;
+        --border: #1f2b26;
+        --border-bright: #2f4a3d;
+
+        --fg: #c9d1c5;
+        --fg-dim: #5f7266;
+        --green: #39ff8c;
+        --green-dim: #1fae62;
+        --cyan: #58e6ff;
+        --yellow: #ffd866;
+        --magenta: #ff6ac1;
+        --red: #ff5f5f;
+        --blue: #6ea8ff;
+
+        --font-mono: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        background: var(--term-bg);
+    }
+
+    body {
+        font-family: var(--font-mono);
+        color: var(--fg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        min-height: 100vh;
+        /* faint scanlines — kept subtle, not a decorative gradient wash */
+        background-image: repeating-linear-gradient(
+            to bottom,
+            rgba(57, 255, 140, 0.025) 0px,
+            rgba(57, 255, 140, 0.025) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    }
+
+    ::selection {
+        background: var(--green);
+        color: #04140b;
+    }
+
+    /* =========================
+       Terminal window chrome
+    ========================= */
+    .terminal {
+        width: 100%;
+        max-width: 620px;
+        background: var(--term-bg-raised);
+        border: 1px solid var(--border-bright);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .titlebar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 14px;
+        border-bottom: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--fg-dim);
+        letter-spacing: 0.5px;
+    }
+
+    .titlebar .dots {
+        letter-spacing: 4px;
+        font-size: 10px;
+    }
+    .titlebar .dots span:nth-child(1) { color: var(--red); }
+    .titlebar .dots span:nth-child(2) { color: var(--yellow); }
+    .titlebar .dots span:nth-child(3) { color: var(--green); }
+
+    .titlebar .path {
+        color: var(--fg-dim);
+    }
+
+    .crt {
+        padding: 20px 22px 24px;
+        min-height: 380px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* =========================
+       Prompt lines
+    ========================= */
+    .prompt-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .prompt-user { color: var(--green); }
+    .prompt-at { color: var(--fg-dim); }
+    .prompt-path { color: var(--cyan); }
+    .prompt-sym { color: var(--fg-dim); }
+    .prompt-cmd { color: var(--fg); }
+
+    .out {
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--fg-dim);
+    }
+    .out .arrow { color: var(--fg-dim); }
+    .out.ok { color: var(--green); }
+    .out.warn { color: var(--yellow); }
+    .out.err { color: var(--red); }
+
+    .rule {
+        color: var(--border-bright);
+        font-size: 13px;
+        overflow: hidden;
+        white-space: nowrap;
+        letter-spacing: -1px;
+        margin: 10px 0;
+        user-select: none;
+    }
+
+    .cursor {
+        display: inline-block;
+        width: 8px;
+        height: 15px;
+        background: var(--green);
+        animation: blink 1s steps(1) infinite;
+        vertical-align: text-bottom;
+    }
+
+    @keyframes blink {
+        0%, 49% { opacity: 1; }
+        50%, 100% { opacity: 0; }
+    }
+
+    /* =========================
+       Text-buttons / bracket links
+    ========================= */
+    .tbtn {
+        background: none;
+        border: none;
+        font-family: var(--font-mono);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--yellow);
+        cursor: pointer;
+        padding: 0;
+        text-align: left;
+    }
+
+    .tbtn:hover {
+        color: var(--term-bg);
+        background: var(--yellow);
+    }
+
+    .tbtn:focus-visible {
+        outline: 1px dashed var(--yellow);
+        outline-offset: 3px;
+    }
+
+    .tbtn .bracket {
+        color: inherit;
+        opacity: 0.7;
+    }
+
+    .tbtn-primary {
+        color: var(--green);
+    }
+    .tbtn-primary:hover {
+        color: var(--term-bg);
+        background: var(--green);
+    }
+
+    .tbtn-cyan {
+        color: var(--cyan);
+    }
+    .tbtn-cyan:hover {
+        color: var(--term-bg);
+        background: var(--cyan);
+    }
+
+    .menu {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 18px 0;
+    }
+
+    .menu-row {
+        font-size: 14px;
+    }
+
+    .menu-row .idx {
+        color: var(--fg-dim);
+    }
+
+    /* =========================
+       Section spacing
+    ========================= */
+    .section {
+        display: none;
+        flex-direction: column;
+        flex: 1;
+    }
+    .section.active {
+        display: flex;
+    }
+
+    /* =========================
+       Dropzone (text-drawn box)
+    ========================= */
+    .dropzone {
+        border: 1px dashed var(--border-bright);
+        background: transparent;
+        padding: 22px 16px;
+        margin: 14px 0;
+        text-align: center;
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--fg-dim);
+    }
+
+    .dropzone.dragover {
+        border-color: var(--green);
+        color: var(--green);
+    }
+
+    .dropzone .glyphline {
+        color: var(--green-dim);
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    #fileInput {
+        display: none;
+    }
+
+    /* =========================
+       Inline field (share code / input)
+    ========================= */
+    .field-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        margin: 10px 0;
+        flex-wrap: wrap;
+    }
+
+    .field-line input[type="text"] {
+        flex: 1;
+        min-width: 160px;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--border-bright);
+        color: var(--cyan);
+        font-family: var(--font-mono);
+        font-size: 14px;
+        padding: 4px 2px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .field-line input[type="text"]:focus {
+        outline: none;
+        border-color: var(--cyan);
+    }
+
+    .field-line input[type="text"]::placeholder {
+        color: var(--fg-dim);
+        letter-spacing: normal;
+        text-transform: none;
+    }
+
+    /* =========================
+       Progress bar (text glyphs)
+    ========================= */
+    .bar {
+        font-size: 14px;
+        color: var(--green);
+        letter-spacing: 1px;
+    }
+
+    /* =========================
+       Share code readout
+    ========================= */
+    .code-readout {
+        display: none;
+        margin: 14px 0;
+        font-size: 13px;
+    }
+    .code-readout.active {
+        display: block;
+    }
+
+    .code-value {
+        color: var(--magenta);
+        font-weight: 700;
+        font-size: 22px;
+        letter-spacing: 6px;
+    }
+
+    .status-line {
+        display: none;
+        font-size: 13px;
+        margin: 8px 0;
+    }
+    .status-line.active {
+        display: block;
+    }
+    .status-line.ok { color: var(--green); }
+    .status-line.err { color: var(--red); }
+    .status-line.info { color: var(--fg-dim); }
+
+    .file-readout {
+        display: none;
+        font-size: 14px;
+        margin: 10px 0;
+        color: var(--fg);
+    }
+    .file-readout.active {
+        display: block;
+    }
+    .file-readout .name {
+        color: var(--cyan);
+    }
+
+    .footer-hint {
+        margin-top: auto;
+        padding-top: 16px;
+        font-size: 12px;
+        color: var(--fg-dim);
+    }
+
+    /* =========================
+       Responsive
+    ========================= */
+    @media (max-width: 480px) {
+        .crt {
+            padding: 16px;
+            min-height: 320px;
+        }
+        .code-value {
+            font-size: 16px;
+            letter-spacing: 3px;
+        }
+        .prompt-line, .out, .tbtn {
+            font-size: 13px;
+        }
+    }
+
+</style>
 </head>
 
 <body>
 
-    <h1>QuickFileShare</h1>
+<main class="terminal">
 
-    <!-- Upload Section -->
-    <input type="file" id="fileInput">
-    <button id="uploadBtn">Upload</button>
+    <div class="titlebar">
+        <span class="dots"><span>●</span> <span>●</span> <span>●</span></span>
+        <span class="path">guest@quickfileshare: ~</span>
+        <span></span>
+    </div>
 
-    <p id="codeText"></p>
+    <div class="crt">
 
-    <hr>
+        <!-- =========================
+             LANDING
+        ========================= -->
+        <section id="landing" class="section active">
+            <p class="prompt-line">
+                <span class="prompt-user">guest</span><span class="prompt-at">@</span><span class="prompt-path">qfs</span><span class="prompt-sym">:~$</span>
+                <span class="prompt-cmd">whoami --service</span>
+            </p>
+            <p class="out">QUICKFILESHARE — instant temporary file sharing.</p>
 
-    <!-- Download Section -->
-    <h2>Download File</h2>
+            <div class="rule">──────────────────────────────────────────────</div>
 
-    <input
-        type="text"
-        id="downloadCode"
-        placeholder="Enter Code"
-    >
+            <p class="out"><span class="arrow">&gt;</span> select an operation:</p>
 
-    <button id="downloadBtn">
-        Download
-    </button>
+            <div class="menu">
+                <div class="menu-row">
+                    <button id="goSendBtn" class="tbtn tbtn-primary">
+                        <span class="bracket">[1]</span> Send Files
+                    </button>
+                </div>
+                <div class="menu-row">
+                    <button id="goReceiveBtn" class="tbtn tbtn-cyan">
+                        <span class="bracket">[2]</span> Receive Files
+                    </button>
+                </div>
+            </div>
 
-    <script>
+            <p class="prompt-line">
+                <span class="prompt-user">guest</span><span class="prompt-at">@</span><span class="prompt-path">qfs</span><span class="prompt-sym">:~$</span>
+                <span class="cursor"></span>
+            </p>
+        </section>
 
-        // =========================
-        // Upload
-        // =========================
+        <!-- =========================
+             SEND
+        ========================= -->
+        <section id="sendScreen" class="section">
+            <p class="prompt-line">
+                <span class="prompt-user">guest</span><span class="prompt-at">@</span><span class="prompt-path">qfs</span><span class="prompt-sym">:~$</span>
+                <span class="prompt-cmd">send --new</span>
+            </p>
+            <p class="out"><span class="arrow">&gt;</span> drag a file below, or browse manually</p>
 
-        const fileInput = document.getElementById("fileInput");
-        const uploadBtn = document.getElementById("uploadBtn");
-        const codeText = document.getElementById("codeText");
+            <div id="dropzone" class="dropzone">
+                <div class="glyphline">[ + ]</div>
+                <div>drag &amp; drop your file here</div>
+                <div style="margin: 8px 0; color: var(--fg-dim);">— or —</div>
+                <button id="browseBtn" class="tbtn tbtn-cyan">
+                    <span class="bracket">[</span> Browse Files <span class="bracket">]</span>
+                </button>
+                <input type="file" id="fileInput">
+            </div>
 
-        uploadBtn.addEventListener("click", async () => {
+            <div id="selectedFile" class="file-readout">
+                <span style="color: var(--fg-dim);">Selected:</span> <span id="selectedFileName" class="name"></span>
+                <div class="menu-row" style="margin-top: 10px;">
+                    <button id="uploadBtn" class="tbtn tbtn-primary">
+                        <span class="bracket">[</span> Upload File <span class="bracket">]</span>
+                    </button>
+                </div>
+            </div>
 
-            const file = fileInput.files[0];
+            <p id="uploadStatus" class="status-line"></p>
 
-            if (!file) {
-                alert("Please select a file first!");
-                return;
-            }
+            <div id="codePanel" class="code-readout">
+                <div class="rule">──────────────────────────────────────────────</div>
+                <p class="out ok">$ upload complete</p>
+                <p style="margin: 10px 0 4px;">SHARE_CODE:</p>
+                <div class="code-value" id="codeText"></div>
+                <div class="menu-row" style="margin-top: 12px;">
+                    <button id="copyCodeBtn" class="tbtn">
+                        <span class="bracket">[</span> Copy Code <span class="bracket">]</span>
+                    </button>
+                </div>
+                <p class="out" style="margin-top: 10px;"><span class="arrow">&gt;</span> share this code with anyone — they can use it to download the file.</p>
+            </div>
+
+            <p class="footer-hint">[ back ] <button class="tbtn" data-back style="display:inline; font-weight:400; color: var(--fg-dim);">click here</button> to return to menu</p>
+        </section>
+
+        <!-- =========================
+             RECEIVE
+        ========================= -->
+        <section id="receiveScreen" class="section">
+            <p class="prompt-line">
+                <span class="prompt-user">guest</span><span class="prompt-at">@</span><span class="prompt-path">qfs</span><span class="prompt-sym">:~$</span>
+                <span class="prompt-cmd">receive --code</span>
+            </p>
+            <p class="out"><span class="arrow">&gt;</span> enter the share code below</p>
+
+            <div class="field-line">
+                <span style="color: var(--fg-dim);">CODE&gt;</span>
+                <input type="text" id="downloadCode" placeholder="A8X4PZ" autocomplete="off" maxlength="12">
+            </div>
+
+            <div class="menu-row" style="margin: 14px 0;">
+                <button id="downloadBtn" class="tbtn tbtn-primary">
+                    <span class="bracket">[</span> Download File <span class="bracket">]</span>
+                </button>
+            </div>
+
+            <p id="downloadStatus" class="status-line err"></p>
+
+            <p class="footer-hint">[ back ] <button class="tbtn" data-back style="display:inline; font-weight:400; color: var(--fg-dim);">click here</button> to return to menu</p>
+        </section>
+
+    </div>
+</main>
+
+<script>
+
+    // =========================
+    // Navigation between sections
+    // =========================
+
+    const sections = {
+        landing: document.getElementById("landing"),
+        send: document.getElementById("sendScreen"),
+        receive: document.getElementById("receiveScreen")
+    };
+
+    function showSection(name) {
+        Object.values(sections).forEach(s => s.classList.remove("active"));
+        sections[name].classList.add("active");
+    }
+
+    document.getElementById("goSendBtn").addEventListener("click", () => showSection("send"));
+    document.getElementById("goReceiveBtn").addEventListener("click", () => showSection("receive"));
+
+    document.querySelectorAll("[data-back]").forEach(btn => {
+        btn.addEventListener("click", () => showSection("landing"));
+    });
+
+    // =========================
+    // Send screen elements
+    // =========================
+
+    const dropzone = document.getElementById("dropzone");
+    const browseBtn = document.getElementById("browseBtn");
+    const fileInput = document.getElementById("fileInput");
+    const selectedFile = document.getElementById("selectedFile");
+    const selectedFileName = document.getElementById("selectedFileName");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadStatus = document.getElementById("uploadStatus");
+    const codePanel = document.getElementById("codePanel");
+    const codeText = document.getElementById("codeText");
+    const copyCodeBtn = document.getElementById("copyCodeBtn");
+
+    function setSelectedFile(file) {
+        if (!file) return;
+        selectedFileName.textContent = file.name;
+        selectedFile.classList.add("active");
+        codePanel.classList.remove("active");
+        uploadStatus.classList.remove("active", "ok", "err", "info");
+        uploadStatus.textContent = "";
+    }
+
+    browseBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        fileInput.click();
+    });
+
+    dropzone.addEventListener("click", (e) => {
+        if (e.target === browseBtn) return;
+        fileInput.click();
+    });
+
+    fileInput.addEventListener("change", () => {
+        setSelectedFile(fileInput.files[0]);
+    });
+
+    ["dragenter", "dragover"].forEach(evt => {
+        dropzone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            dropzone.classList.add("dragover");
+        });
+    });
+
+    ["dragleave", "drop"].forEach(evt => {
+        dropzone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            dropzone.classList.remove("dragover");
+        });
+    });
+
+    dropzone.addEventListener("drop", (e) => {
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            fileInput.files = e.dataTransfer.files;
+            setSelectedFile(file);
+        }
+    });
+
+    uploadBtn.addEventListener("click", async () => {
+
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        uploadStatus.textContent = "$ uploading... [████░░░░░░] please wait";
+        uploadStatus.className = "status-line info active";
+
+        try {
 
             const formData = new FormData();
             formData.append("file", file);
+            const response = await fetch("/upload", { method: "POST", body: formData });
+            const data = await response.json();
 
-            try {
+            codeText.textContent = data.code;
+            codePanel.classList.add("active");
+            uploadStatus.classList.remove("active", "info");
 
-                const response = await fetch("/upload", {
-                    method: "POST",
-                    body: formData
-                });
+        } catch (error) {
+            uploadStatus.textContent = "$ upload failed — connection error";
+            uploadStatus.className = "status-line err active";
+        }
 
-                const data = await response.json();
+    });
 
-                codeText.textContent = `Your Code: ${data.code}`;
+    copyCodeBtn.addEventListener("click", async () => {
+        try {
+            await navigator.clipboard.writeText(codeText.textContent);
+            copyCodeBtn.innerHTML = '<span class="bracket">[</span> Copied! <span class="bracket">]</span>';
+            setTimeout(() => {
+                copyCodeBtn.innerHTML = '<span class="bracket">[</span> Copy Code <span class="bracket">]</span>';
+            }, 1500);
+        } catch (error) {
+            copyCodeBtn.innerHTML = '<span class="bracket">[</span> Copy failed <span class="bracket">]</span>';
+            setTimeout(() => {
+                copyCodeBtn.innerHTML = '<span class="bracket">[</span> Copy Code <span class="bracket">]</span>';
+            }, 1500);
+        }
+    });
 
-            } catch (error) {
+    // =========================
+    // Receive screen elements
+    // =========================
 
-                console.error(error);
-                alert("Upload failed!");
+    const downloadCode = document.getElementById("downloadCode");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const downloadStatus = document.getElementById("downloadStatus");
 
-            }
+    downloadBtn.addEventListener("click", async () => {
 
-        });
+        const code = downloadCode.value.trim();
+        if (!code) return;
 
-        // =========================
-        // Download
-        // =========================
+        downloadStatus.classList.remove("active");
 
-        const downloadBtn = document.getElementById("downloadBtn");
-        const downloadCode = document.getElementById("downloadCode");
-
-        downloadBtn.addEventListener("click", () => {
-
-            const code = downloadCode.value.trim();
-
-            if (!code) {
-                alert("Please enter a code!");
-                return;
-            }
+        try {
 
             window.location.href = `/download/${code}`;
 
-        });
+        } catch (error) {
+            downloadStatus.textContent = "$ error: invalid or expired code.";
+            downloadStatus.classList.add("active");
+        }
 
-    </script>
+    });
+
+</script>
 
 </body>
 
