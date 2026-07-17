@@ -4,11 +4,16 @@ QuickFileShare is a temporary file sharing application built using Node.js, Expr
 
 Users can upload a file and receive a unique 6-character code. Anyone with the code can download the file. Files automatically expire after 30 minutes.
 
+## Website
+
+https://quickfileshare.up.railway.app/
+
 ## Features
 
 - Upload files
 - Generate a unique 6-character sharing code
 - Download files using the generated code
+- No logins required
 - Automatic file expiration after 30 minutes
 - PostgreSQL database with Prisma
 - Deployed on Railway
