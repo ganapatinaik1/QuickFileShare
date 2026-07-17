@@ -6,14 +6,13 @@ const { PrismaClient } = require("@prisma/client");
 
 const path = require("path");
 
+const fs = require("fs");
+
 const prisma = new PrismaClient();
 
-const app = express()
+const app = express();
 
 app.use(express.static("public"));
-
-
-
 
 const PORT = process.env.PORT || 3000;
 
@@ -21,10 +20,10 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
-
 const upload = multer({
     dest: "uploads/"
 });
+
 function generateCode() {
 
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -44,24 +43,26 @@ function generateCode() {
 
 app.post("/upload", upload.single("file"), async (req, res) => {
 
- const code = generateCode();
+    const code = generateCode();
 
- await prisma.file.create({
-    data: {
-        code: code,
-        originalName: req.file.originalname,
-        storedName: req.file.filename,
-    }
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
+    await prisma.file.create({
+        data: {
+            code: code,
+            originalName: req.file.originalname,
+            storedName: req.file.filename,
+            expiresAt: expiresAt
+        }
     });
 
     console.log(req.file);
 
     console.log(code);
-    
+
     res.json({
         code: code
     });
-
 
 });
 
@@ -77,19 +78,30 @@ app.get("/download/:code", async (req, res) => {
     });
 
     if (!file) {
-    return res.status(404).send("File not found");
-}
+        return res.status(404).send("File not found");
+    }
 
     console.log(file);
 
-const filePath = path.join(__dirname, "..", "uploads", file.storedName);
+    const filePath = path.join(__dirname, "..", "uploads", file.storedName);
 
-console.log(filePath);
+    if (new Date() > file.expiresAt) {
 
-res.download(filePath, file.originalName);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
 
+        await prisma.file.delete({
+            where: {
+                code: file.code
+            }
+        });
+
+        return res.status(410).send("File has expired.");
+    }
+
+    console.log(filePath);
+
+    res.download(filePath, file.originalName);
 
 });
-
-
-

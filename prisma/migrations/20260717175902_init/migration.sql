@@ -5,6 +5,7 @@ CREATE TABLE "File" (
     "originalName" TEXT NOT NULL,
     "storedName" TEXT NOT NULL,
     "uploadedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "File_pkey" PRIMARY KEY ("id")
 );

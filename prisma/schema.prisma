@@ -13,4 +13,5 @@ model File {
   originalName String
   storedName   String
   uploadedAt   DateTime @default(now())
+  expiresAt    DateTime
 }
