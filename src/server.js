@@ -10,6 +10,15 @@ const path = require("path");
 
 const fs = require("fs");
 
+let WORDS = [];
+
+try {
+    const raw = fs.readFileSync(path.join(__dirname, "data", "words.txt"), "utf8");
+    WORDS = raw.split("\n").map(w => w.trim()).filter(w => w.length > 0);
+} catch (e) {
+    WORDS = ["kiwi", "moss", "cake", "fish", "bird", "tree", "wind", "rain", "sun", "moon"];
+}
+
 const prisma = new PrismaClient();
 
 const app = express();
@@ -22,21 +31,37 @@ const upload = multer({
     dest: "uploads/"
 });
 
-function generateCode() {
+async function generateCode() {
 
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    if (WORDS.length === 0) {
 
-    let code = "";
-
-    for (let i = 0; i < 6; i++) {
-
-        const randomIndex = Math.floor(Math.random() * chars.length);
-
-        code += chars[randomIndex];
+        return "kiwi moss";
 
     }
 
-    return code;
+    for (let attempt = 0; attempt < 50; attempt++) {
+
+        const w1 = WORDS[Math.floor(Math.random() * WORDS.length)];
+
+        const w2 = WORDS[Math.floor(Math.random() * WORDS.length)];
+
+        const code = w1 + " " + w2;
+
+        const existing = await prisma.file.findFirst({
+
+            where: { code: code }
+
+        });
+
+        if (!existing) {
+
+            return code;
+
+        }
+
+    }
+
+    return WORDS[Math.floor(Math.random() * WORDS.length)] + " " + WORDS[Math.floor(Math.random() * WORDS.length)];
 
 }
 
@@ -50,7 +75,7 @@ app.post("/upload", upload.any(), async (req, res) => {
 
     }
 
-    const code = generateCode();
+    const code = await generateCode();
 
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
