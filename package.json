@@ -21,6 +21,7 @@
   "homepage": "https://github.com/ganapatinaik1/QuickFileShare#readme",
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "dotenv": "^16.4.5",
     "express": "^5.2.1",
     "multer": "^2.2.0",
     "prisma": "^6.19.3"

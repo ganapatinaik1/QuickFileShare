@@ -9,9 +9,11 @@ datasource db {
 
 model File {
   id           Int      @id @default(autoincrement())
-  code         String   @unique
+  code         String
   originalName String
   storedName   String
   uploadedAt   DateTime @default(now())
   expiresAt    DateTime
+
+  @@index([code])
 }

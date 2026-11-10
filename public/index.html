@@ -441,7 +441,7 @@
                 <button id="browseBtn" class="tbtn tbtn-cyan">
                     <span class="bracket">[</span> Browse Files <span class="bracket">]</span>
                 </button>
-                <input type="file" id="fileInput">
+                <input type="file" id="fileInput" multiple>
             </div>
 
             <div id="selectedFile" class="file-readout">
@@ -499,7 +499,6 @@
 
     </div>
 </main>
-
 <script>
 
     // =========================
@@ -541,7 +540,8 @@
 
     function setSelectedFile(file) {
         if (!file) return;
-        selectedFileName.textContent = file.name;
+        const files = Array.from(fileInput.files);
+        selectedFileName.textContent = files.map(f => f.name).join(", ");
         selectedFile.classList.add("active");
         codePanel.classList.remove("active");
         uploadStatus.classList.remove("active", "ok", "err", "info");
@@ -577,17 +577,15 @@
     });
 
     dropzone.addEventListener("drop", (e) => {
-        const file = e.dataTransfer.files[0];
-        if (file) {
-            fileInput.files = e.dataTransfer.files;
-            setSelectedFile(file);
-        }
+        e.preventDefault();
+        fileInput.files = e.dataTransfer.files;
+        setSelectedFile(e.dataTransfer.files[0]);
     });
 
     uploadBtn.addEventListener("click", async () => {
 
-        const file = fileInput.files[0];
-        if (!file) return;
+        const files = Array.from(fileInput.files);
+        if (files.length === 0) return;
 
         uploadStatus.textContent = "$ uploading... [████░░░░░░] please wait";
         uploadStatus.className = "status-line info active";
@@ -595,7 +593,7 @@
         try {
 
             const formData = new FormData();
-            formData.append("file", file);
+            files.forEach(file => formData.append("file", file));
             const response = await fetch("/upload", { method: "POST", body: formData });
             const data = await response.json();
 
