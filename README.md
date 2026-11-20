@@ -1,116 +1,118 @@
-&#x20;\<div align="center">
+<div align="center">
+
+<img src="preview.png" width="800" alt="QuickFileShare website preview">
 
 # QuickFileShare
 
-**Share files. Skip the hassle.**
+### Temporary File Sharing, Made Simple
 
-A lightweight temporary file-sharing platform built with Node.js, Express, Prisma and PostgreSQL.
+Upload a file, get a unique 6-character code, share it with anyone.<br>
+No logins · No clutter · Files auto-delete after 30 minutes.
 
-Upload a file, get a unique 6-character code, and share it with anyone.
-No accounts. No unnecessary steps. Files automatically expire after 30 minutes.
+**[Overview](#overview)** &nbsp;·&nbsp;
+**[Website](https://quickfileshare.up.railway.app/)** &nbsp;·&nbsp;
+**[Features](#features)** &nbsp;·&nbsp;
+**[Technologies](#technologies-used)** &nbsp;·&nbsp;
+**[Installation](#installation)** &nbsp;·&nbsp;
+**[Structure](#project-structure)** &nbsp;·&nbsp;
+**[Author](#author)**
 
-\<br/>
+<p>
+  <a href="#technologies-used"><img alt="Node.js" src="https://img.shields.io/badge/RUNTIME-NODE.JS-339933?style=for-the-badge&logo=nodedotjs&logoColor=white&labelColor=0C1213"></a>
+  <a href="#technologies-used"><img alt="Express" src="https://img.shields.io/badge/SERVER-EXPRESS.JS-80D4DC?style=for-the-badge&logo=express&logoColor=black&labelColor=0C1213"></a>
+  <a href="#technologies-used"><img alt="Multer" src="https://img.shields.io/badge/UPLOADS-MULTER-FF9800?style=for-the-badge&labelColor=0C1213"></a>
+  <a href="#technologies-used"><img alt="Prisma" src="https://img.shields.io/badge/ORM-PRISMA-B7C7EA?style=for-the-badge&logo=prisma&logoColor=black&labelColor=0C1213"></a>
+  <a href="#technologies-used"><img alt="PostgreSQL" src="https://img.shields.io/badge/DATABASE-POSTGRESQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=0C1213"></a>
+  <a href="https://quickfileshare.up.railway.app/"><img alt="Railway" src="https://img.shields.io/badge/HOSTED%20ON-RAILWAY-00F0FF?style=for-the-badge&logo=railway&logoColor=black&labelColor=0C1213"></a>
+</p>
+<p>
+  <img alt="Code" src="https://img.shields.io/badge/SHARE%20CODE-6%20CHARACTERS-80CBC4?style=for-the-badge&labelColor=0C1213">
+  <img alt="Expiry" src="https://img.shields.io/badge/AUTO%20EXPIRY-30%20MINUTES-FF6F00?style=for-the-badge&labelColor=0C1213">
+  <img alt="Login" src="https://img.shields.io/badge/LOGIN-NOT%20REQUIRED-4CAF50?style=for-the-badge&labelColor=0C1213">
+  <img alt="Last Commit" src="https://img.shields.io/github/last-commit/ganapatinaik1/QuickFileShare?style=for-the-badge&labelColor=0C1213&color=80D4DC">
+  <img alt="Stars" src="https://img.shields.io/github/stars/ganapatinaik1/QuickFileShare?style=for-the-badge&labelColor=0C1213&color=B7C7EA">
+</p>
 
-[**Website**](https://quickfileshare.up.railway.app/) · [**GitHub**](https://github.com/ganapatinaik1/QuickFileShare) · [**Installation**](#installation) · [**Features**](#features)
+</div>
 
-\<br/>
+> [!IMPORTANT]
+> **Temporary by Design**<br>
+> Every uploaded file expires automatically after 30 minutes. Share the code before then, because the file will not be recoverable afterwards.
 
-
-
-
-\
-
-
-\<br/>
-
-
-
-\</div>
-
----
 
 ## Overview
 
-QuickFileShare makes temporary file sharing ridiculously simple.
+QuickFileShare is a temporary file sharing application built using Node.js, Express, Prisma, and PostgreSQL.
 
-1. Upload a file.
-2. Receive a unique 6-character sharing code.
-3. Share the code with anyone.
-4. They enter the code and download your file.
+Users can upload a file and receive a unique 6-character code. Anyone with the code can download the file. Files automatically expire after 30 minutes.
 
-Files are automatically deleted after **30 minutes**, keeping storage temporary and the workflow simple.
+**Live website:** https://quickfileshare.up.railway.app/
 
 ## Features
 
-| Feature           | Description                                      |
-| :---------------- | :----------------------------------------------- |
-| File Uploads      | Upload files through a simple interface          |
-| Unique Codes      | Automatically generate 6-character sharing codes |
-| File Downloads    | Retrieve files using their sharing codes         |
-| No Authentication | No accounts or login required                    |
-| Auto Expiration   | Files expire after 30 minutes                    |
-| Database          | PostgreSQL powered by Prisma ORM                 |
+- Upload files
+- Generate a unique 6-character sharing code
+- Download files using the generated code
+- No logins required
+- Automatic file expiration after 30 minutes
+- PostgreSQL database with Prisma
 
-## Tech Stack
+## Technologies Used
 
-| Technology | Purpose                 |
-| :--------- | :---------------------- |
-| Node.js    | Runtime environment     |
-| Express.js | Backend framework       |
-| Multer     | File upload handling    |
-| Prisma ORM | Database management     |
-| PostgreSQL | Persistent data storage |
-|            |                         |
+- Node.js
+- Express.js
+- Multer
+- Prisma ORM
+- PostgreSQL
+- Railway
 
 ## Installation
 
-**1. Clone the repository**
+Clone the repository:
 
 ```bash
 git clone https://github.com/ganapatinaik1/QuickFileShare.git
 ```
 
-**2. Navigate to the project**
+Go to the project directory:
 
 ```bash
 cd QuickFileShare
 ```
 
-**3. Install dependencies**
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-**4. Configure environment variables**
-
-Create a `.env` file in the project root:
+Create a `.env` file and add:
 
 ```env
 DATABASE_URL=your_database_url
 ```
 
-**5. Run database migrations**
+Run the database migration:
 
 ```bash
 npx prisma migrate dev
 ```
 
-**6. Start the application**
+Start the server:
 
 ```bash
 npm start
 ```
 
-The application will be available at:
+The application will run at:
 
-```text
+```
 http://localhost:3000
 ```
 
 ## Project Structure
 
-```text
+```
 QuickFileShare/
 ├── prisma/
 ├── public/
@@ -120,12 +122,7 @@ QuickFileShare/
 └── README.md
 ```
 
----
+## Author
 
-\<div align="center">
-
-**Built by [Ganapati Naik](https://github.com/ganapatinaik1)**
-
-\<sub>Simple file sharing. Nothing more, nothing less.\</sub>
-
-\</div>
+**Ganapati Naik**<br>
+GitHub: [@ganapatinaik1](https://github.com/ganapatinaik1)
