@@ -1,4 +1,6 @@
 <div align="center">
+
+  
 # QuickFileShare
 
 ### Temporary File Sharing, Made Simple
@@ -32,7 +34,7 @@ No logins · No clutter · Files auto-delete after 30 minutes.
 
 </div>
 
-
+<div align="center">
 <img src="data/preview.png" width="800" alt="QuickFileShare website preview">
 
 
