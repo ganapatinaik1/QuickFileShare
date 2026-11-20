@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="preview.png" width="800" alt="QuickFileShare website preview">
+<img src="data/preview.png" width="800" alt="QuickFileShare website preview">
 
 # QuickFileShare
 
