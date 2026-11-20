@@ -23,7 +23,7 @@ No logins · No clutter · Files auto-delete after 30 minutes.
   <a href="#technologies-used"><img alt="Multer" src="https://img.shields.io/badge/UPLOADS-MULTER-FF9800?style=for-the-badge&labelColor=0C1213"></a>
   <a href="#technologies-used"><img alt="Prisma" src="https://img.shields.io/badge/ORM-PRISMA-B7C7EA?style=for-the-badge&logo=prisma&logoColor=black&labelColor=0C1213"></a>
   <a href="#technologies-used"><img alt="PostgreSQL" src="https://img.shields.io/badge/DATABASE-POSTGRESQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=0C1213"></a>
-  <a href="https://quickfileshare.up.railway.app/"><img alt="Railway" src="https://img.shields.io/badge/HOSTED%20ON-RAILWAY-00F0FF?style=for-the-badge&logo=railway&logoColor=black&labelColor=0C1213"></a>
+  <a href="https://quickfileshare.mooo.com/"><img alt="Oracle" src="https://img.shields.io/badge/HOSTED%20ON-Oracle-00F0FF?style=for-the-badge&logo=racle&logoColor=black&labelColor=0C1213"></a>
 </p>
 <p>
   <img alt="Code" src="https://img.shields.io/badge/SHARE%20CODE-6%20CHARACTERS-80CBC4?style=for-the-badge&labelColor=0C1213">
@@ -34,11 +34,6 @@ No logins · No clutter · Files auto-delete after 30 minutes.
 </p>
 
 </div>
-
-> [!IMPORTANT]
-> **Temporary by Design**<br>
-> Every uploaded file expires automatically after 30 minutes. Share the code before then, because the file will not be recoverable afterwards.
-
 
 ## Overview
 
