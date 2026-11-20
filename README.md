@@ -1,79 +1,116 @@
+&#x20;\<div align="center">
+
 # QuickFileShare
 
-QuickFileShare is a temporary file sharing application built using Node.js, Express, Prisma, and PostgreSQL.
+**Share files. Skip the hassle.**
 
-Users can upload a file and receive a unique 6-character code. Anyone with the code can download the file. Files automatically expire after 30 minutes.
+A lightweight temporary file-sharing platform built with Node.js, Express, Prisma and PostgreSQL.
 
-## Website
+Upload a file, get a unique 6-character code, and share it with anyone.
+No accounts. No unnecessary steps. Files automatically expire after 30 minutes.
 
-https://quickfileshare.up.railway.app/
+\<br/>
+
+[**Website**](https://quickfileshare.up.railway.app/) · [**GitHub**](https://github.com/ganapatinaik1/QuickFileShare) · [**Installation**](#installation) · [**Features**](#features)
+
+\<br/>
+
+
+
+
+\
+
+
+\<br/>
+
+
+
+\</div>
+
+---
+
+## Overview
+
+QuickFileShare makes temporary file sharing ridiculously simple.
+
+1. Upload a file.
+2. Receive a unique 6-character sharing code.
+3. Share the code with anyone.
+4. They enter the code and download your file.
+
+Files are automatically deleted after **30 minutes**, keeping storage temporary and the workflow simple.
 
 ## Features
 
-- Upload files
-- Generate a unique 6-character sharing code
-- Download files using the generated code
-- No logins required
-- Automatic file expiration after 30 minutes
-- PostgreSQL database with Prisma
-- Deployed on Railway
+| Feature           | Description                                      |
+| :---------------- | :----------------------------------------------- |
+| File Uploads      | Upload files through a simple interface          |
+| Unique Codes      | Automatically generate 6-character sharing codes |
+| File Downloads    | Retrieve files using their sharing codes         |
+| No Authentication | No accounts or login required                    |
+| Auto Expiration   | Files expire after 30 minutes                    |
+| Database          | PostgreSQL powered by Prisma ORM                 |
 
-## Technologies Used
+## Tech Stack
 
-- Node.js
-- Express.js
-- Multer
-- Prisma ORM
-- PostgreSQL
-- Railway
+| Technology | Purpose                 |
+| :--------- | :---------------------- |
+| Node.js    | Runtime environment     |
+| Express.js | Backend framework       |
+| Multer     | File upload handling    |
+| Prisma ORM | Database management     |
+| PostgreSQL | Persistent data storage |
+|            |                         |
 
 ## Installation
 
-Clone the repository:
+**1. Clone the repository**
 
 ```bash
 git clone https://github.com/ganapatinaik1/QuickFileShare.git
 ```
 
-Go to the project directory:
+**2. Navigate to the project**
 
 ```bash
 cd QuickFileShare
 ```
 
-Install dependencies:
+**3. Install dependencies**
 
 ```bash
 npm install
 ```
 
-Create a `.env` file and add:
+**4. Configure environment variables**
+
+Create a `.env` file in the project root:
 
 ```env
 DATABASE_URL=your_database_url
 ```
 
-Run the database migration:
+**5. Run database migrations**
 
 ```bash
 npx prisma migrate dev
 ```
 
-Start the server:
+**6. Start the application**
 
 ```bash
 npm start
 ```
 
-The application will run at:
+The application will be available at:
 
-```
+```text
 http://localhost:3000
 ```
 
 ## Project Structure
 
-```
+```text
 QuickFileShare/
 ├── prisma/
 ├── public/
@@ -83,12 +120,12 @@ QuickFileShare/
 └── README.md
 ```
 
+---
 
-## Author
+\<div align="center">
 
-Ganapati Naik
-GitHub: https://github.com/ganapatinaik1
+**Built by [Ganapati Naik](https://github.com/ganapatinaik1)**
 
-Ganapati Naik
+\<sub>Simple file sharing. Nothing more, nothing less.\</sub>
 
-GitHub: https://github.com/ganapatinaik1.
+\</div>
