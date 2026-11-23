@@ -77,7 +77,7 @@ app.post("/upload", upload.any(), async (req, res) => {
 
     const code = await generateCode();
 
-    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000);
 
     const created = await Promise.all(files.map(f =>
 
